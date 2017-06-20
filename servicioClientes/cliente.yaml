@@ -1,0 +1,37 @@
+clientes:
+  - nombre: Jose Perez
+    fechaNacimiento: 24/01/1990
+    cedula: 4.527.284-1
+    domicilio: Sarmiento 1267
+    nroTarjetaCredito: '43234567765334567'
+    id: 31ff232607a966f93f5ba2ec10b82c3c2dc1895f
+  - nombre: Martin Gonzales
+    fechaNacimiento: 18/04/1986
+    cedula: 4.126.725-7
+    domicilio: Soriano 7834
+    nroTarjetaCredito: '4567872334589878'
+    id: bfe2e0b9f262198565c7cc2e5385210b7cc2e390
+  - nombre: Agustina Pereira
+    fechaNacimiento: 22/02/1987
+    cedula: 4.236.384-3
+    domicilio: 19 de abril 876
+    nroTarjetaCredito: '47878234561729806'
+    id: 13e9b6d0e3f34851175ce3ac24261998c7e52416
+  - nombre: Jose Peralta
+    fechaNacimiento: 02/06/1985
+    cedula: 4.234.675-3
+    domicilio: 25 de mayo 235
+    nroTarjetaCredito: '47689234855736612'
+    id: cc95e2296e337e9c68d41d927fa0500e384261cd
+  - nombre: Manuel Lopez
+    fechaNacimiento: 10/11/1991
+    cedula: 4.561.235-4
+    domicilio: Salto 876
+    nroTarjetaCredito: '4225672349812722'
+    id: 7864054af594ce5b1811b6bb0ec34d93d5020b0e
+  - nombre: Martina Benitez
+    fechaNacimiento: 28/02/1995
+    cedula: 4.123.346-2
+    domicilio: YI 128
+    nroTarjetaCredito: '4878123456732345'
+    id: 068828f9561348d05eaa6b9c8c8eba7642bf688b

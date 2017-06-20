@@ -1,0 +1,17 @@
+product: 1.0.0
+info:
+  name: productoclientes
+  title: productoClientes
+  version: 1.0.0
+visibility:
+  view:
+    type: public
+  subscribe:
+    type: authenticated
+plans:
+  new-plan:
+    title: Plan nuevo 1
+    apis: {}
+apis:
+  servicioClientes:
+    $ref: swagger.yaml

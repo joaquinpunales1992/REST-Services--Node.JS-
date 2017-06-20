@@ -1,0 +1,240 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: servicioClientes
+host: $(catalog.host)
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /cliente:
+    x-swagger-router-controller: cliente
+    get:
+      operationId: getAll
+      description: obtiene la lista de clientes
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/GetClientes'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/GetClientes'
+    post:
+      operationId: save
+      description: agregar nuevo cliente
+      parameters:
+        - name: nombre
+          description: nombre del cliente
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Cliente'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/GeneralResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/GeneralResponse'
+  '/cliente/{cedula}':
+    x-swagger-router-controller: cliente
+    get:
+      operationId: getByCedula
+      description: obtener un cliente por cedula
+      parameters:
+        - name: cedula
+          type: string
+          in: path
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/GetClientePorCedula'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/GetClientePorCedula'
+    delete:
+      operationId: delCliente
+      description: eliminar un cliente
+      parameters:
+        - name: cedula
+          description: cedula del cliente
+          type: string
+          in: path
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/GeneralResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/GeneralResponse'
+  /swagger:
+    x-swagger-pipe: swagger_raw
+definitions:
+  GetClientes:
+    required:
+      - clientes
+    properties:
+      clientes:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            nombre:
+              type: string
+            fechaNacimiento:
+              type: string
+            cedula:
+              type: string
+            domicilio:
+              type: string
+            nroTarjetaCredito:
+              type: string
+  Cliente:
+    type: object
+    properties:
+      nombre:
+        type: string
+        description: nombre del cliente
+      fechaNacimiento:
+        type: string
+        description: fecha de nacimiento del cliente
+      cedula:
+        type: string
+        description: cedula del cliente
+      domicilio:
+        type: string
+        description: domicilio del cliente
+      nroTarjetaCredito:
+        type: string
+        description: Nro. de tarjeta de credito del cliente
+    required:
+      - nombre
+      - fechaNacimiento
+      - cedula
+      - domicilio
+      - nroTarjetaCredito
+  GeneralResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        description: returns 1 if successful
+      description:
+        type: string
+        description: a short comment
+    required:
+      - success
+      - description
+  GetClientePorCedula:
+    required:
+      - nombre
+      - fechaNacimiento
+      - cedula
+      - domicilio
+      - nroTarjetaCredito
+    properties:
+      nombre:
+        type: string
+        description: nombre del cliente
+      fechaNacimiento:
+        type: string
+        description: fecha de nacimiento del cliente
+      cedula:
+        type: string
+        description: cedula del cliente
+      domicilio:
+        type: string
+        description: domicilio del cliente
+      nroTarjetaCredito:
+        type: string
+        description: Nro. de tarjeta de credito del cliente
+x-ibm-configuration:
+  assembly:
+    execute:
+      - operation-switch:
+          title: operation-switch
+          case:
+            - operations:
+                - getAll
+              execute:
+                - invoke:
+                    title: invoke
+                    timeout: 60
+                    verb: GET
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error:
+                      - null
+                    secure-gateway: false
+                    target-url: 'https://servicioclientes.mybluemix.net/cliente'
+                - gatewayscript:
+                    title: gatewayscript
+                    source: "apim.readInputAsJSON(function (error,buffer) {\r\n    if (error) {\r\n       console.log(\"Error al leer datos en formato JSON\");\r\n   } else {\r\n      \r\n           buffer.DatosGeograficos = {\r\n                                        \"Ciudad\":\"Montevideo\",\r\n                                        \"Departamento\":\"Montevideo\",\r\n                                        \"Pais\": \"Uruguay\"\r\n                                        \r\n                                     };\r\n       session.output.write(buffer);\r\n       apim.output('application/json'); \r\n   }\r\n});\r\n"
+                - json-to-xml:
+                    title: json-to-xml
+                    root-element-name: json
+                    always-output-root-element: false
+                - redact:
+                    title: enmascararDatosSensibles
+                    actions:
+                      - action: redact
+                        from: []
+                        path: //clientes/nroTarjetaCredito
+                      - from: []
+                        action: redact
+                        path: //clientes/domicilio
+                - redact:
+                    title: eliminarDatosSensibles
+                    actions:
+                      - action: remove
+                        from:
+                          - response
+                        path: //clientes/nroTarjetaCredito
+                      - from:
+                          - response
+                        action: remove
+                        path: //clientes/domicilio
+                - gatewayscript:
+                    title: gatewayscript
+                    source: "var hm = require('header-metadata');\r\nvar vConType = hm.current.get(\"content-type\");\r\n\r\nif (vConType == 'application/json; charset=utf-8')\r\n    {\r\n    //Flujo en función del tipo del tipo de respuesta\r\n    //Cambiar la respuesta\r\n    //console.info(\"Headers: %j\", hm.original.headers);\r\n    //hm.response.statusCode = \"201 Respuesta JSON\";\r\n    \r\n    }  \r\nif (vConType == 'application/xml; charset=uft=utf-8')\r\n    {\r\n    //Flujo en función del tipo del tipo de respuesta\r\n    //Cambiar la Respuesta\r\n    //console.info(\"Headers: %j\", hm.original.headers);\r\n    //hm.response.statusCode = \"202 Respuesta XML\";\r\n \r\n    }\r\n"
+                - activity-log:
+                    title: activity-log
+                    content: activity
+                    error-content: payload
+            - operations:
+                - getByCedula
+                - delCliente
+                - save
+              execute:
+                - invoke:
+                    title: invoke
+                    timeout: 60
+                    verb: GET
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error:
+                      - null
+                    secure-gateway: false
+                    target-url: 'https://servicioclientes.mybluemix.net/cliente'
+                - activity-log:
+                    title: activity-log
+                    content: activity
+                    error-content: payload
+          otherwise: []
+    catch: []
+  gateway: datapower-gateway
