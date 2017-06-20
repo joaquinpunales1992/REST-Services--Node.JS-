@@ -1,0 +1,115 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: ServicioMillas
+host: localhost:10010
+basePath: /
+
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+
+  /obtenerMillas:
+    x-swagger-router-controller: controladorMillas
+    get:
+      operationId: obtenerMillas
+      description: Obtiene la lista de Usuarios y sus millas
+      responses: 
+          '200':
+            description: Success
+            schema:
+              $ref: '#/definitions/Usuario'
+          default:
+            description: Error
+            schema:
+              $ref: "#/definitions/ErrorResponse"
+  
+  /obtenerMillas/{cedula}:
+    x-swagger-router-controller: controladorMillas
+    get:
+      operationId: obtenerMillasPorCedula 
+      description: Obtiene la informacion completa de un usuario por cedula
+      parameters:
+        - name: cedula
+          type: string
+          in: path
+          required: true
+      responses: 
+          '200':
+            description: Success
+            schema:
+              $ref: '#/definitions/Usuario'
+          default:
+            description: Error
+            schema:
+              $ref: "#/definitions/ErrorResponse"
+
+  /agregarUsuario:
+    x-swagger-router-controller: controladorMillas
+    post:
+      operationId: agregarUsuario
+      description: Agrega un nuevo Usuario y todas sus Millas
+      parameters:
+        - name: usuario
+          description: usuario completo
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Usuario'
+      responses: 
+          '200':
+            description: Success
+            schema:
+              $ref: '#/definitions/GeneralResponse'
+          default:
+            description: Error
+            schema:
+              $ref: "#/definitions/ErrorResponse"
+
+definitions:
+  
+  Usuario:
+    properties:
+      nombreUsuario: 
+        type: string
+      cedulaUsuario: 
+        type: string
+      millas: 
+        type: array
+        items:
+          $ref: "#/definitions/Millas"
+          
+  Millas:
+    type: object
+    properties:
+      aerolinea:
+        type: string
+      cantidad:
+        type: integer 
+      vencimiento:
+        type: string
+        
+  GeneralResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        description: devuelve 1 en caso de exito
+      description:
+        type: string
+        description: un comentario breve
+    required:
+      - success
+      - description
+  
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
